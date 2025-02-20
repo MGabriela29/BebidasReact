@@ -11,7 +11,10 @@ export default function IndexPage() {
 
   return (
     <>
+   <div className="text-center">
     <h1 className="text-6xl font-extrabold">Recetas</h1>
+</div>
+
     {
       hasRecipes ? (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 my-10 gap-10">

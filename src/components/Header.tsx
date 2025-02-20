@@ -3,69 +3,71 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAppStore } from "../stores/useAppStore";
 
 export default function Header() {
+    const { pathname } = useLocation();
+    const isHome = useMemo(() => pathname === '/', [pathname]);
 
-    const {pathname} =useLocation()
-    const isHome = useMemo(() => pathname === '/', [pathname])
-    // console.log(isHome)
+    const [searchFilters, setSearchFilters] = useState({
+      ingredient: '',
+      category: ''
+    });
 
-    const fetchCategories = useAppStore((state)=> state.fetchCategories)
-    const categories = useAppStore((state)=> state.categories)
-    const searchRecipes = useAppStore(state => state.searchRecipes)
+    const fetchCategories = useAppStore((state) => state.fetchCategories);
+    const categories = useAppStore((state) => state.categories);
+    const searchRecipes = useAppStore(state => state.searchRecipes);
+    const showNotification = useAppStore(state => state.showNotification); 
+    
+    useEffect(() => {
+        fetchCategories();
+    }, []);
 
-
-    useEffect(()=>{
-      fetchCategories()
-    }, [])
-
-    const [searchFilters,setSearchFilters] = useState({
-      ingredient:'',
-      category:''
-    })
-
-    function handleChange(e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>){
+    function handleChange(
+      e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLSelectElement>
+    ) {
       setSearchFilters({
-        ...searchFilters,[e.target.name]:e.target.value
-      })
+        ...searchFilters, [e.target.name]: e.target.value
+      });
     }
 
-    function handleSubmit(e: FormEvent<HTMLFormElement>){
-      e.preventDefault()
-
-      if(Object.values(searchFilters).includes('')){
-        console.log('Debes llenar todo')
-        return
+    function handSubmit(e: FormEvent<HTMLFormElement>) {
+      e.preventDefault();
+      if (Object.values(searchFilters).includes('')) {
+        showNotification({
+          text: "Debes llenar todos los campos solicitados.",
+          error: true
+        });
+        return;
       }
-      searchRecipes(searchFilters)
+      searchRecipes(searchFilters);
     }
 
-  return (
-    <header className={isHome ? 'bg-header bg-center bg-cover':'bg-slate-800'}>
-        <div className="mx-auto container px-5 py-16">
+    return (
+      <header className={isHome ? 'bg-header bg-center bg-cover':'bg-slate-800'}>
+        <div className="mx-auto container px-20 py-4">
             <div className="flex justify-between items-center">
                 <div>
                     <img className="w-32" src="/logo.svg" alt="logotipo" />
                 </div>
 
-                <nav className="flex gap-4">
+                <nav className="flex gap-8">
                     <NavLink
                     className={({isActive}) => isActive? 
-                    'text-orange-500 uppercase font-bold':
-                    'text-white uppercase font-bold'}
+                    'text-orange-500 uppercase font-extrabold':
+                    'text-white uppercase font-extrabold'}
                      to='/'>Home</NavLink>
                     {/* <br></br> */}
                     <NavLink 
                      className={({isActive}) => isActive? 
-                    'text-orange-500 uppercase font-bold':
-                    'text-white uppercase font-bold'}
+                    'text-orange-500 uppercase font-extrabold':
+                    'text-white uppercase font-extrabold, flex gap-8 mr-40'}
                     to='/favoritos'>Favoritos</NavLink>
                 </nav>
             </div>
             {
                 isHome && (
                     <form 
-                    onSubmit={handleSubmit}
-                    className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow space-y-6">
-                  <div className="space-y-4">
+                    onSubmit={handSubmit}
+                    className="md:w-1/2 2xl:w-1/3 m-52 bg-orange-400 my-8 p-10 rounded-lg shadow space-y-6">
+                  <div className="space-y-6">
                     <label 
                       htmlFor="ingredient"
                       className="block text-white uppercase font-extrabold text-lg">
@@ -114,7 +116,6 @@ export default function Header() {
                 )
             }
         </div>
-    </header>
-
-  )
+    </header>
+    );
 }
