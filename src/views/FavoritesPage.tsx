@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useAppStore } from '../stores/useAppStore'
 import DrinkCard from '../components/DrinkCard'
 
